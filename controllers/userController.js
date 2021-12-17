@@ -3,22 +3,59 @@ const express = require('express')
 const User = require('../models/user')
 const router = express.Router()
 router.use(express.static("public"))
-router.use(express.urlencoded())
 
-router.post('/signup', async (req,res,next)=>
-{
-   await User.register(new User({username: req.body.username, email: req.body.email}), req.body.password, function(err) {
-        if (err.name ==='MongoServerError' && err.code === 11000) {
-          res.send({name: "EmailExistsError", message: 'A user with the given email is already registered'})
-          return next(err)
-        }else if(err)
-        {
-          res.send(err)
-          return next(err)
-          
-        }
-        res.send({message: "User registered successfully!"})
-      });
+router.post('/signup', async (req, res, next) => {
+  await User.register(new User({ username: req.body.username, email: req.body.email }), req.body.password, (err) => {
+    if (err) {
+      if (err.name === 'MongoServerError' && err.code === 11000) {
+        res.send({ name: "EmailExistsError", message: 'A user with the given email is already registered' })
+        return next()
+      } else
+        res.send(err)
+      return next()
+    }
+
+    res.send({ message: "User registered successfully!" })
+  });
+})
+
+router.post('/login', async (req, res) => {
+  await passport.authenticate('local', (err, thisModel) => {
+    if (err) {
+      return res.send({ message: err })
+    }
+    if (!thisModel) {
+      return res.send({ message: "Password or username or email is incorrect" })
+    }
+    res.send({ message: "User login Successful" })
+    console.log(req.session)
+  })(req)
+
+
+
+})
+
+
+router.post('/logout', async (req, res, next) => {
+ 
+  if (req.session) {
+    
+    req.logout();
+    req.session.destroy((err) => {
+      if (err) {
+        res.send(err)
+      } else {
+        res.send({ message: "You are successfully logged out!" })
+      }
+    })
+  } 
+  else {
+    res.send({ message: "You are not logged in!" })
+    next();
+  }
+
+
+
 })
 
 module.exports = router

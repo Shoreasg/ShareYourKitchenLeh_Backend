@@ -6,7 +6,6 @@ const LocalStrategy = require('passport-local').Strategy
 const User = require('./models/user')
 const app = express();
 app.use(express.json())
-app.use(express.urlencoded())
 const userController = require('./controllers/userController')
 
 
