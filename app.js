@@ -1,14 +1,17 @@
 const express = require('express');
+require('dotenv').config();
 const passport = require('passport')
 const session = require('express-session')
 const LocalStrategy = require('passport-local').Strategy
 const User = require('./models/user')
 const app = express();
 app.use(express.json())
+app.use(express.urlencoded())
+const userController = require('./controllers/userController')
 
 
 app.use(session({
-    secret: process.env.secret,
+    secret: process.env.SECRET,
     resave:false,
     saveUninitialized: false
 }));
@@ -24,7 +27,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 // use static serialize and deserialize of model for passport session support
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
-
+app.use(userController)
 
 
 
