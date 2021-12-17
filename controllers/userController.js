@@ -5,17 +5,19 @@ const router = express.Router()
 router.use(express.static("public"))
 router.use(express.urlencoded())
 
-router.post('/signup',(req,res,next)=>
+router.post('/signup', async (req,res,next)=>
 {
-    User.register(new User({username: req.body.username, email: req.body.email}), req.body.password, function(err) {
-        if (err) {
-          console.log('error while user register!', err);
-          return next(err);
+   await User.register(new User({username: req.body.username, email: req.body.email}), req.body.password, function(err) {
+        if (err.name ==='MongoServerError' && err.code === 11000) {
+          res.send({name: "EmailExistsError", message: 'A user with the given email is already registered'})
+          return next(err)
+        }else if(err)
+        {
+          res.send(err)
+          return next(err)
+          
         }
-    
-        console.log('user registered!');
-    
-        res.redirect('/');
+        res.send({message: "User registered successfully!"})
       });
 })
 
