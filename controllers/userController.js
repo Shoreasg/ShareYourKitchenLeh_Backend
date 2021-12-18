@@ -14,12 +14,9 @@ router.post('/signup', async (req, res, next) => {
         res.send(err)
       return next()
     }else{
-        passport.authenticate('local', (err, thisModel) => {
+        passport.authenticate('local', (err) => {
             if (err) {
               return res.send({ message: err })
-            }
-            if (!thisModel) {
-              return res.send({ message: "Password or username or email is incorrect" })
             }
             res.send({ message: "User registered and login Successful" })
         
