@@ -13,13 +13,24 @@ router.post('/signup', async (req, res, next) => {
       } else
         res.send(err)
       return next()
-    }
+    }else{
+        passport.authenticate('local', (err, thisModel) => {
+            if (err) {
+              return res.send({ message: err })
+            }
+            if (!thisModel) {
+              return res.send({ message: "Password or username or email is incorrect" })
+            }
+            res.send({ message: "User registered and login Successful" })
+        
+          })(req,res,next)
+        
 
-    res.send({ message: "User registered successfully!" })
+    }
   });
 })
 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res,next) => {
   await passport.authenticate('local', (err, thisModel) => {
     if (err) {
       return res.send({ message: err })
@@ -28,8 +39,8 @@ router.post('/login', async (req, res) => {
       return res.send({ message: "Password or username or email is incorrect" })
     }
     res.send({ message: "User login Successful" })
-    console.log(req.session)
-  })(req)
+
+  })(req,res,next)
 
 
 
@@ -48,6 +59,7 @@ router.post('/logout', async (req, res, next) => {
         res.send({ message: "You are successfully logged out!" })
       }
     })
+  
   } 
   else {
     res.send({ message: "You are not logged in!" })
