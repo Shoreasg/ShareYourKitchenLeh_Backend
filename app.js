@@ -6,7 +6,10 @@ const LocalStrategy = require('passport-local').Strategy
 const User = require('./models/user')
 const app = express();
 app.use(express.json())
+app.use(express.urlencoded());
 const userController = require('./controllers/userController')
+const itemController = require('./controllers/itemController')
+
 
 
 app.use(session({
@@ -27,6 +30,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 app.use(userController)
+app.use('/items', itemController)
 
 
 
