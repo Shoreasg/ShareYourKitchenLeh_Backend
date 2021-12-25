@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 require('dotenv').config();
 const passport = require('passport')
 const session = require('express-session')
@@ -7,6 +8,7 @@ const User = require('./models/user')
 const app = express();
 app.use(express.json())
 app.use(express.urlencoded());
+app.use(cors());
 const userController = require('./controllers/userController')
 const itemController = require('./controllers/itemController')
 
