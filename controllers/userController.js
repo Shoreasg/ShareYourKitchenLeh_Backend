@@ -7,6 +7,7 @@ router.use(express.static("public"))
 router.post('/signup', async (req, res, next) => {
   await User.register(new User({ username: req.body.username }), req.body.password, (err) => {
     if (err) {
+      res.status(400)
       res.send(err)
       return next()
     } else {
@@ -26,9 +27,11 @@ router.post('/signup', async (req, res, next) => {
 router.post('/login', async (req, res, next) => {
   await passport.authenticate('local', (err, thisModel) => {
     if (err) {
+      res.status(400)
       return res.send({ message: err })
     }
     if (!thisModel) {
+      res.status(400)
       return res.send({ message: "Password or username is incorrect" })
     }
     res.send({ message: "User login Successful" })
