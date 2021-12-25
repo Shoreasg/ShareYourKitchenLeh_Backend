@@ -7,7 +7,7 @@ const LocalStrategy = require('passport-local').Strategy
 const User = require('./models/user')
 const app = express();
 app.use(express.json())
-app.use(cors());
+app.use(cors({origin: "http://localhost:3000",methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],credentials:true}));
 const userController = require('./controllers/userController')
 
 
