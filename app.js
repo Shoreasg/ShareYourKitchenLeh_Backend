@@ -7,7 +7,6 @@ const LocalStrategy = require('passport-local').Strategy
 const User = require('./models/user')
 const app = express();
 app.use(express.json())
-app.set("trust proxy", 1);
 app.use(cors({origin: "http://localhost:3000",methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],credentials:true}));
 const userController = require('./controllers/userController')
 
@@ -21,10 +20,7 @@ app.use(session({
         sameSite: 'none'
     }
 }));
-app.use((req, res, next)=>{
-    req["sessionCookies"].secure = true;
-    next();
-});
+
 
 // Configure passport middleware
 app.use(passport.initialize());
