@@ -14,7 +14,8 @@ const userController = require('./controllers/userController')
 app.use(session({
     secret: process.env.SECRET,
     resave:false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    sameSite: none
 }));
 
 
