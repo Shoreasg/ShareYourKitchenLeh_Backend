@@ -21,7 +21,10 @@ app.use(session({
         sameSite: 'none'
     }
 }));
-
+app.use((req, res, next)=>{
+    req["sessionCookies"].secure = true;
+    next();
+});
 
 // Configure passport middleware
 app.use(passport.initialize());
