@@ -15,10 +15,6 @@ app.use(session({
     secret: process.env.SECRET,
     resave:false,
     saveUninitialized: false,
-    cookie: {
-        secure: false,
-        sameSite: 'none'
-    }
 }));
 
 
