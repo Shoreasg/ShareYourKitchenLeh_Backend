@@ -45,6 +45,11 @@ router.post('/login', async (req, res, next) => {
 
 });
 
+router.get('/getlogin', (req,res)=>
+{
+  res.send(req.user)
+})
+
 
 router.post('/logout', async (req, res, next) => {
 
