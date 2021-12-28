@@ -51,7 +51,7 @@ router.get('/getlogin', (req,res)=>
 })
 
 
-router.get('/logout', async (req, res) => {
+router.delete('/logout', async (req, res) => {
 
   if (req.session) {
     req.logOut()
