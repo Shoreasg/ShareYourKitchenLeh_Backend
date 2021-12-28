@@ -51,15 +51,15 @@ router.get('/getlogin', (req,res)=>
 })
 
 
-router.post('/logout', async (req, res, next) => {
+router.get('/logout', async (req, res) => {
 
   if (req.session) {
-
-    req.logout();
+    req.logOut()
     req.session.destroy((err) => {
       if (err) {
         res.send(err)
       } else {
+        res.clearCookie('connect.sid')
         res.send({ message: "You are successfully logged out!" })
       }
     })
@@ -67,7 +67,6 @@ router.post('/logout', async (req, res, next) => {
   }
   else {
     res.send({ message: "You are not logged in!" })
-    next();
   }
 
 
