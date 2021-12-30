@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(
 	cors({
-		origin: "http://localhost:5000",
+		origin: "http://localhost:3000",
 		methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD", "DELETE"],
 		credentials: true,
 	})
@@ -36,6 +36,22 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use(userController);
 
+// routes
 
+const groupsRouter = require("./routes/groups");
+const itemsRouter = require("./routes/items");
 
+app.get("/", (req, res) => {
+	res.send("ga-p3-share your kitchen ler api");
+});
+
+app.use("/api/v1/groups", groupsRouter);
+app.use("/api/v1/items", itemsRouter);
+
+// error handler
+const notFoundMiddleware = require("./middleware/not-found");
+const errorHandlerMiddleware = require("./middleware/error-handler");
+
+app.use(notFoundMiddleware);
+app.use(errorHandlerMiddleware);
 module.exports = app;
