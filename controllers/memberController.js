@@ -10,8 +10,10 @@ const createMember = async (req, res) => {
 		throw new BadRequestError("Please provide an unique name");
 	}
 
+	// check if member is existing or new
 	const checkUniqueName = await Member.exists({ memberName });
 
+	// if existing : return json with msg
 	if (checkUniqueName) {
 		return res.status(StatusCodes.CONFLICT).json({
 			status: "rejected",
@@ -19,7 +21,7 @@ const createMember = async (req, res) => {
 		});
 	}
 
-	// create new member & new default group assigned
+	// if new : create new member & new default group assigned
 	const personalGRP = `${memberName}-Personal`;
 	const member = await Member.create({ memberName });
 	const group = await Group.create({
@@ -28,6 +30,7 @@ const createMember = async (req, res) => {
 		members: [member._id],
 	});
 
+	// updating the created group into newly created member profile
 	const updatedMember = await Member.findByIdAndUpdate(
 		{ _id: member._id },
 		{ groupsID: [group._id] },
@@ -54,11 +57,17 @@ const getAllMembers = async (req, res) => {
 
 	res
 		.status(StatusCodes.OK)
-		.json({ status: "OK", count: members.length, results: members });
+		.json({ status: "OK", count: members.length, data: members });
 };
 
+// get single member profile
+
 const getMember = async (req, res) => {
-	res.send("get Member");
+	const id = req.params.id;
+
+	const member = await Member.findById({ _id: id });
+
+	return res.status(StatusCodes.OK).json({ status: "OK", data: member });
 };
 
 const updateMember = async (req, res) => {
