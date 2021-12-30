@@ -41,7 +41,93 @@ const createItem = async (req, res) => {
 // ============================>> Get ALL Items
 
 const getAllItems = async (req, res) => {
-	res.send("get all Item");
+	try {
+		// for query path is ?key=value
+		// eg http://localhost:5000/api/v1/items?fav=false&valueFilter=qty>=4
+		// req.query return object so can directly pass in .find(obj)
+
+		const { fav, name, brand, createdby, sort, fields, valueFilter } =
+			req.query;
+
+		const queryObj = {};
+
+		if (fav) {
+			queryObj.fav = fav === "true" ? true : false;
+		}
+
+		if (brand) {
+			queryObj.brand = brand;
+		}
+
+		if (name) {
+			queryObj.name = { $regex: name, $options: "i" };
+		}
+
+		//______ valueFilter ______//
+		// items?valueFilter=qty>=4
+		// return greater/equal 4 qty: rating>=4
+		// valueFilter: 'qty>=1'
+		if (valueFilter) {
+			//converting the query to mongoose readable operator
+			const operatorMap = {
+				">": "$gt",
+				">=": "$gte",
+				"=": "$eq",
+				"<": "$lt",
+				"<=": "$lte",
+			};
+			// converting the query to match with moogoose operator (if match: swap the value)
+			// db.inventory.find( { qty: { $gte: 20 } } )
+			const regEx = /\b(<|>|>=|=|<|<=)\b/g;
+			let filters = valueFilter.replace(
+				regEx,
+				(match) => `-${operatorMap[match]}-`
+			);
+			// eg: filters: qty-$gte-4
+
+			// only allowing filters of Number value
+			const [field, operator, value] = filters.split("-");
+			if (field === "qty") {
+				// eg: queryObj : { qty: { '$gte': 4 } }
+				queryObj[field] = { [operator]: Number(value) };
+			}
+		}
+
+		// results of the customised query
+		// eg http://localhost:5000/api/v1/items?fav=false&valueFilter=qty>=4&brand=meiji&name=sauces
+
+		let items = Item.find(queryObj);
+
+		//______ sort ______//
+		// eg items?sort=name,-qty
+		// positive: a-z, negative is z-a
+
+		if (sort) {
+			const sortList = sort.split(",").join(" ");
+			console.log(sortList);
+			items = items.sort(sortList);
+		} else {
+			items = items.sort("-createdAt");
+		}
+
+		//______ fields ______//
+		//returning only selected fileds in the list e.g data of only name and qty
+
+		if (fields) {
+			const selectList = fields.split(",").join(" ");
+			result = result.select(selectList);
+		}
+
+		const data = await items;
+		return res
+			.status(StatusCodes.OK)
+			.json({ status: "OK", count: data.length, data });
+	} catch (error) {
+		res.status(StatusCodes.BAD_REQUEST).json({
+			status: "BAD REQUEST",
+			message: `Error ${error}`,
+		});
+	}
 };
 
 // ============================>> GET SINGLE Item detail
