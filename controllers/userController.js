@@ -45,8 +45,7 @@ router.post('/login', async (req, res, next) => {
 
 });
 
-router.get('/getlogin', (req,res)=>
-{
+router.get('/getlogin', (req, res) => {
   res.send(req.user)
 })
 
