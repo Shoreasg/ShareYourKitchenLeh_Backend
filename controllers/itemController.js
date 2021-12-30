@@ -59,9 +59,28 @@ const updateItem = async (req, res) => {
 // ============================>> DELETE Item
 
 const deleteItem = async (req, res) => {
-	res.send("delete Item");
-};
+	try {
+		const id = req.params.id;
 
+		const item = await Item.findByIdAndRemove({ _id: id });
+		if (!item) {
+			res.status(StatusCodes.NOT_FOUND).json({
+				status: "NOT FOUND",
+				message: `No data record with id ${id}`,
+			});
+		}
+
+		return res.status(StatusCodes.OK).json({
+			status: "OK",
+			message: `item deleted`,
+		});
+	} catch (error) {
+		res.status(StatusCodes.BAD_REQUEST).json({
+			status: "BAD REQUEST",
+			message: `Error ${error}`,
+		});
+	}
+};
 module.exports = {
 	getAllItems,
 	getItem,
