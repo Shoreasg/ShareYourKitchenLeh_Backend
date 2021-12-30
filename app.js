@@ -40,13 +40,17 @@ app.use(userController);
 
 const groupsRouter = require("./routes/groups");
 const itemsRouter = require("./routes/items");
+const membersRouter = require("./routes/members");
 
 app.get("/", (req, res) => {
-	res.send("ga-p3-share your kitchen ler api");
+	res.send(
+		"<div><h1>GA/SEIF7 - PROJECT 3: GROUP 1</h1><h2>Share your kitchen leh API</h2><ul><li><a href='/api/v1/members'>All Members</a></li><li><a href='/api/v1/groups'>All Groups</a></li><li><a href='/api/v1/items'>All Items</a></li></ul></div>"
+	);
 });
 
 app.use("/api/v1/groups", groupsRouter);
 app.use("/api/v1/items", itemsRouter);
+app.use("/api/v1/members", membersRouter);
 
 // error handler
 const notFoundMiddleware = require("./middleware/not-found");

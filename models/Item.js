@@ -13,10 +13,17 @@ const ItemSchema = new mongoose.Schema(
 			lowercase: true,
 			trim: true,
 		},
-		expiryDate: Date,
-		qty: Number,
+		expiryDate: {
+			type: Date,
+			required: [true, "Please provide a item's expiry date"],
+		},
+		qty: {
+			type: Number,
+			required: [true, "Please provide a item's quantity value"],
+			min: 0,
+		},
 		favourite: Boolean,
-		grpName: {
+		grpID: {
 			type: mongoose.Types.ObjectId,
 			ref: "Group",
 			required: [true, "Please select group to save item"],
@@ -24,6 +31,8 @@ const ItemSchema = new mongoose.Schema(
 		imgUrl: {
 			type: String,
 			trim: true,
+			default:
+				"https://www.gemkom.com.tr/wp-content/uploads/2020/02/NO_IMG_600x600-1.png",
 		},
 		createdBy: {
 			type: mongoose.Types.ObjectId,

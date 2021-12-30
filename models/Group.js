@@ -11,12 +11,14 @@ const GroupSchema = new mongoose.Schema(
 		imgUrl: {
 			type: String,
 			trim: true,
+			default:
+				"https://www.gemkom.com.tr/wp-content/uploads/2020/02/NO_IMG_600x600-1.png",
 		},
 		members: [String],
-		createdBy: {
+		ownerID: {
 			type: mongoose.Types.ObjectId,
-			ref: "User",
-			required: [true, "Please login as user"],
+			ref: "Member",
+			required: [true, "Need a member"],
 		},
 	},
 	{ timestamps: true }
