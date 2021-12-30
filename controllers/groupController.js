@@ -52,7 +52,7 @@ const createGroup = async (req, res) => {
 			}
 		}
 
-		return res.status(StatusCodes.CREATED).json({ group });
+		return res.status(StatusCodes.OK).json({ status: "OK", data: group });
 	} catch (error) {
 		res.status(StatusCodes.BAD_REQUEST).json({
 			status: "BAD REQUEST",
@@ -149,12 +149,12 @@ const updateGroup = async (req, res) => {
 			}
 
 			let toREMOVE = lodash.difference(group.members, [ownerID, ...members]);
-			console.log(toREMOVE.length);
+
 			if (toREMOVE.length > 0) {
 				for (const element of toREMOVE) {
 					const list = await Member.findOne({ _id: element });
 					let newGRPList = list.groupsID.filter((item) => item !== id);
-					console.log(list.groupsID);
+
 					await Member.findByIdAndUpdate(
 						{ _id: element },
 						{ groupsID: newGRPList },
@@ -187,6 +187,8 @@ const updateGroup = async (req, res) => {
 		});
 	}
 };
+
+// ============================>> DELETE Group
 
 const deleteGroup = async (req, res) => {
 	try {

@@ -4,7 +4,7 @@ const ItemSchema = new mongoose.Schema(
 	{
 		name: {
 			type: String,
-			required: [true, "Please provide a item name"],
+			required: [true, "Please provide item name"],
 			lowercase: true,
 			trim: true,
 		},
@@ -15,14 +15,14 @@ const ItemSchema = new mongoose.Schema(
 		},
 		expiryDate: {
 			type: Date,
-			required: [true, "Please provide a item's expiry date"],
+			required: [true, "Please provide expiry date"],
 		},
 		qty: {
 			type: Number,
-			required: [true, "Please provide a item's quantity value"],
+			required: [true, "Please provide quantity value"],
 			min: 0,
 		},
-		favourite: Boolean,
+		fav: Boolean,
 		grpID: {
 			type: mongoose.Types.ObjectId,
 			ref: "Group",
