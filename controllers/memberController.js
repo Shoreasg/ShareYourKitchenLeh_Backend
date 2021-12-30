@@ -10,7 +10,16 @@ const createMember = async (req, res) => {
 		throw new BadRequestError("Please provide an unique name");
 	}
 
-	// create new member & new default group
+	const checkUniqueName = await Member.exists({ memberName });
+
+	if (checkUniqueName) {
+		return res.status(StatusCodes.CONFLICT).json({
+			status: "rejected",
+			message: "Name is taken, please enter another name",
+		});
+	}
+
+	// create new member & new default group assigned
 	const personalGRP = `${memberName}-Personal`;
 	const member = await Member.create({ memberName });
 	const group = await Group.create({
@@ -25,11 +34,27 @@ const createMember = async (req, res) => {
 		{ new: true, runValidators: true }
 	);
 
-	res.status(StatusCodes.CREATED).json({ updatedMember, group });
+	return res.status(StatusCodes.CREATED).json({ updatedMember, group });
 };
 
 const getAllMembers = async (req, res) => {
-	res.send("get all Member");
+	const { groupID, search } = req.query;
+	console.log(req.query);
+	const queryObj = {};
+
+	if (search) {
+		queryObj.memberName = { $regex: search, $options: "i" };
+	}
+
+	if (groupID) {
+		queryObj.groupsID = { $in: [groupID] };
+	}
+
+	const members = await Member.find(queryObj);
+
+	res
+		.status(StatusCodes.OK)
+		.json({ status: "OK", count: members.length, results: members });
 };
 
 const getMember = async (req, res) => {
