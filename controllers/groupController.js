@@ -65,7 +65,7 @@ const createGroup = async (req, res) => {
 
 const getAllGroups = async (req, res) => {
 	try {
-		const { ownerID, search, members, fields } = req.query;
+		const { ownerID, search, members, sort, fields } = req.query;
 		const queryObj = {};
 
 		if (search) {
