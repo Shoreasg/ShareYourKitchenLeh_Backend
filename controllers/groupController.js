@@ -122,7 +122,6 @@ const updateGroup = async (req, res) => {
 	try {
 		const id = req.params.id;
 		let { grpName, imgUrl, members, ownerID } = req.body;
-		members = [ownerID, ...members];
 
 		let group = await Group.findOne({ _id: id });
 
@@ -133,41 +132,41 @@ const updateGroup = async (req, res) => {
 			});
 		}
 
-		// // if group's member is changed, will need to update member's profile groupID
-		// let toREMOVE;
-		// let toADD;
+		if (group.members !== [ownerID, ...members]) {
+			// updating groupsID into every members profile
 
-		// if (group.members !== members) {
-		// 	toREMOVE = lodash.difference(group.members, members);
-		// 	toADD = lodash.difference(members, group.members);
+			if (members.length > 0) {
+				for (const element of members) {
+					let checkMemberGRP = await Member.findByIdAndUpdate({ _id: element });
+					if (!checkMemberGRP.groupsID.includes(group._id)) {
+						const updatedMember = await Member.findByIdAndUpdate(
+							{ _id: element },
+							{ $push: { groupsID: group._id } },
+							{ new: true, runValidators: true }
+						);
+					}
+				}
+			}
 
-		// 	console.log(`to remove: ${toREMOVE}`);
-		// 	console.log(`to add: ${toADD}`);
-		// }
-
-		// if (toADD.length) {
-		// 	// ADDING GRP ID into member's profile
-		// 	for (let element of toADD) {
-		// 		let updatedMember = await Member.findByIdAndUpdate(
-		// 			{ _id: element },
-		// 			{ $push: { groupsID: id } },
-		// 			{ new: true, runValidators: true }
-		// 		);
-		// 	}
-		// }
-		// if (toREMOVE.length) {
-		// 	// REMOVE GRP ID from member's profile
-		// 	for (let element of toREMOVE) {
-		// 		let current = await Member.findOne({ _id: element });
-		// 		let filterList = await current.groupsID.filter((item) => item !== id);
-		// 		let updatedMember = await Member.findByIdAndUpdate(
-		// 			{ _id: element },
-		// 			{ groupsID: filterList },
-		// 			{ new: true, runValidators: true }
-		// 		);
-		// 	}
-		// }
-
+			let toREMOVE = lodash.difference(group.members, [ownerID, ...members]);
+			console.log(toREMOVE.length);
+			if (toREMOVE.length > 0) {
+				for (const element of toREMOVE) {
+					const list = await Member.findOne({ _id: element });
+					let newGRPList = list.groupsID.filter((item) => item !== id);
+					console.log(list.groupsID);
+					await Member.findByIdAndUpdate(
+						{ _id: element },
+						{ groupsID: newGRPList },
+						{
+							new: true,
+							runValidators: true,
+						}
+					);
+				}
+			}
+		}
+		members = [ownerID, ...members];
 		// Updating Group
 		group = await Group.findByIdAndUpdate(
 			{ _id: id },
