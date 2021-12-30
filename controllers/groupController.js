@@ -190,7 +190,54 @@ const updateGroup = async (req, res) => {
 };
 
 const deleteGroup = async (req, res) => {
-	res.send("delete group");
+	try {
+		const id = req.params.id;
+
+		// if id wrong return no record
+		let group = await Group.findOne({ _id: id });
+
+		if (!group) {
+			return res.status(StatusCodes.NOT_FOUND).json({
+				status: "NOT FOUND",
+				message: `No data record with id ${id}`,
+			});
+		}
+
+		// updating member profile group array, removed the groupsID
+
+		// check all contain GroupsID member returning in array
+		const members = await Member.find({
+			groupsID: { $in: [id] },
+		});
+
+		// if array is truthy remove the id
+		if (members) {
+			for (let element of members) {
+				let newGRPList = element.groupsID.filter((item) => item !== id);
+				await Member.findByIdAndUpdate(
+					{ _id: element._id },
+					{ groupsID: newGRPList },
+					{
+						new: true,
+						runValidators: true,
+					}
+				);
+			}
+		}
+
+		// deleting group data
+		group = await Group.findByIdAndRemove({ _id: id });
+
+		return res.status(StatusCodes.OK).json({
+			status: "OK",
+			message: `member profile updated and group deleted`,
+		});
+	} catch (error) {
+		res.status(StatusCodes.BAD_REQUEST).json({
+			status: "BAD REQUEST",
+			message: `Error ${error}`,
+		});
+	}
 };
 
 module.exports = {
