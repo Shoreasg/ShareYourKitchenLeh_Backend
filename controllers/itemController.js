@@ -47,13 +47,51 @@ const getAllItems = async (req, res) => {
 // ============================>> GET SINGLE Item detail
 
 const getItem = async (req, res) => {
-	res.send("get Item");
+	try {
+		const id = req.params.id;
+		const item = await Item.findOne({ _id: id });
+
+		if (!item) {
+			return res.status(StatusCodes.NOT_FOUND).json({
+				status: "NOT FOUND",
+				message: `No data record with id ${id}`,
+			});
+		}
+
+		return res.status(StatusCodes.OK).json({ status: "OK", data: item });
+	} catch (error) {
+		res.status(StatusCodes.BAD_REQUEST).json({
+			status: "BAD REQUEST",
+			message: `Error ${error}`,
+		});
+	}
 };
 
 // ============================>> UPDATE Item
 
 const updateItem = async (req, res) => {
-	res.send("update Item");
+	try {
+		const id = req.params.id;
+
+		const item = await Item.findByIdAndUpdate({ _id: id }, req.body, {
+			new: true,
+			runValidators: true,
+		});
+
+		if (!item) {
+			return res.status(StatusCodes.NOT_FOUND).json({
+				status: "NOT FOUND",
+				message: `No data record with id ${id}`,
+			});
+		}
+
+		return res.status(StatusCodes.OK).json({ status: "OK", data: item });
+	} catch (error) {
+		res.status(StatusCodes.BAD_REQUEST).json({
+			status: "BAD REQUEST",
+			message: `Error ${error}`,
+		});
+	}
 };
 
 // ============================>> DELETE Item
