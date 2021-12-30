@@ -65,7 +65,7 @@ const createGroup = async (req, res) => {
 
 const getAllGroups = async (req, res) => {
 	try {
-		const { ownerID, search, members } = req.query;
+		const { ownerID, search, members, fields } = req.query;
 		const queryObj = {};
 
 		if (search) {
@@ -80,10 +80,29 @@ const getAllGroups = async (req, res) => {
 			queryObj.ownerID = ownerID;
 		}
 
-		const group = await Group.find(queryObj);
+		let result = Group.find(queryObj);
+
+		//______ sort ______//
+		// eg items?sort=name,-qty
+		// positive: a-z, negative is z-a
+		if (sort) {
+			const sortList = sort.split(",").join(" ");
+			result = result.sort(sortList);
+		} else {
+			result = result.sort("createdAt");
+		}
+
+		//______ fields ______//
+		//returning only selected fileds in the list e.g data of only name and qty
+		if (fields) {
+			const fieldsList = fields.split(",").join(" ");
+			result = result.select(fieldsList);
+		}
+
+		const data = await result;
 		return res
 			.status(StatusCodes.OK)
-			.json({ status: "OK", count: group.length, data: group });
+			.json({ status: "OK", count: data.length, data });
 	} catch (error) {
 		res.status(StatusCodes.BAD_REQUEST).json({
 			status: "BAD REQUEST",

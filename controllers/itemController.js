@@ -63,6 +63,10 @@ const getAllItems = async (req, res) => {
 			queryObj.name = { $regex: name, $options: "i" };
 		}
 
+		if (createdby) {
+			queryObj.createdBy = createdby;
+		}
+
 		//______ valueFilter ______//
 		// items?valueFilter=qty>=4
 		// return greater/equal 4 qty: rating>=4
@@ -96,29 +100,26 @@ const getAllItems = async (req, res) => {
 		// results of the customised query
 		// eg http://localhost:5000/api/v1/items?fav=false&valueFilter=qty>=4&brand=meiji&name=sauces
 
-		let items = Item.find(queryObj);
+		let result = Item.find(queryObj);
 
 		//______ sort ______//
 		// eg items?sort=name,-qty
 		// positive: a-z, negative is z-a
-
 		if (sort) {
 			const sortList = sort.split(",").join(" ");
-			console.log(sortList);
-			items = items.sort(sortList);
+			result = result.sort(sortList);
 		} else {
-			items = items.sort("-createdAt");
+			result = result.sort("createdAt");
 		}
 
 		//______ fields ______//
 		//returning only selected fileds in the list e.g data of only name and qty
-
 		if (fields) {
-			const selectList = fields.split(",").join(" ");
-			result = result.select(selectList);
+			const fieldsList = fields.split(",").join(" ");
+			result = result.select(fieldsList);
 		}
 
-		const data = await items;
+		const data = await result;
 		return res
 			.status(StatusCodes.OK)
 			.json({ status: "OK", count: data.length, data });
