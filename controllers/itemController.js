@@ -46,7 +46,7 @@ const getAllItems = async (req, res) => {
 		// eg http://localhost:5000/api/v1/items?fav=false&valueFilter=qty>=4
 		// req.query return object so can directly pass in .find(obj)
 
-		const { fav, name, brand, createdby, sort, fields, valueFilter } =
+		const { fav, name, brand, createdby, sort, fields, valueFilter, grpID } =
 			req.query;
 
 		const queryObj = {};
@@ -65,6 +65,10 @@ const getAllItems = async (req, res) => {
 
 		if (createdby) {
 			queryObj.createdBy = createdby;
+		}
+
+		if (grpID) {
+			queryObj.grpID = grpID;
 		}
 
 		//______ valueFilter ______//
