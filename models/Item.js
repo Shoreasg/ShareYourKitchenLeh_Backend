@@ -19,7 +19,7 @@ const ItemSchema = new mongoose.Schema(
 		},
 		qty: {
 			type: Number,
-			required: [true, "Please provide quantity value"],
+			default: 1,
 			min: 0,
 		},
 		fav: Boolean,
