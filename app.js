@@ -38,22 +38,30 @@ passport.use(new FacebookStrategy({
     function (accessToken, refreshToken, profile, done) {
         console.log(profile)
         User.findOne({
-            'facebookId': profile.id
-        }, function (err, user) {
+            'username': profile.displayName
+        }, (err, user) => {
             if (err) {
                 return done(err);
-            } if (!user) {
-                user = new User({
-                    username: profile.displayName,
-                    facebookId: profile.id
-                });
-                user.save(function (err) {
-                    if (err) console.log(err);
-                    return done(err, user);
-                });
-            } else {
-                //found user. Return
+            } if (user) {
+                if (user.facebookId == undefined) {
+                    user.facebookId = profile.id
+                    user.save();
+                }
                 return done(err, user);
+            }
+            else {
+                user = new User(
+                    {
+                        username: profile.displayName,
+                        facebookId: profile.id
+                    }
+                );
+                user.save(err => {
+                    if (err) {
+                        throw err
+                    }
+                    return done(err, user)
+                })
             }
         });
 
@@ -71,27 +79,36 @@ passport.use(new TwitterStrategy({
     function (token, tokenSecret, profile, done) {
         console.log(profile)
         User.findOne({
-            'twitterId': profile.id
-        }, function (err, user) {
+            'username': profile.displayName
+        }, (err, user) => {
             if (err) {
                 return done(err);
-            } if (!user) {
-                user = new User({
-                    username: profile.displayName,
-                    twitterId: profile.id
-                });
-                user.save(function (err) {
-                    if (err) console.log(err);
-                    return done(err, user);
-                });
-            } else {
-                //found user. Return
+            } if (user) {
+                if (user.twitterId == undefined) {
+                    user.twitterId = profile.id
+                    user.save();
+                }
                 return done(err, user);
+            }
+            else {
+                user = new User(
+                    {
+                        username: profile.displayName,
+                        twitterId: profile.id
+                    }
+                );
+                user.save(err => {
+                    if (err) {
+                        throw err
+                    }
+                    return done(err, user)
+                })
             }
         });
 
     }
 ));
+
 
 passport.use(new GoogleStrategy({
     clientID: process.env['GOOGLE_CLIENT_ID'],
@@ -100,22 +117,30 @@ passport.use(new GoogleStrategy({
 }, function (accessToken, refreshToken, profile, done) {
     console.log(profile)
     User.findOne({
-        'googleId': profile.id
-    }, function (err, user) {
+        'username': profile.displayName
+    }, (err, user) => {
         if (err) {
             return done(err);
-        } if (!user) {
-            user = new User({
-                username: profile.displayName,
-                googleId: profile.id
-            });
-            user.save(function (err) {
-                if (err) console.log(err);
-                return done(err, user);
-            });
-        } else {
-            //found user. Return
+        } if (user) {
+            if (user.googleId == undefined) {
+                user.googleId = profile.id
+                user.save();
+            }
             return done(err, user);
+        }
+        else {
+            user = new User(
+                {
+                    username: profile.displayName,
+                    googleId: profile.id
+                }
+            );
+            user.save(err => {
+                if (err) {
+                    throw err
+                }
+                return done(err, user)
+            })
         }
     });
 

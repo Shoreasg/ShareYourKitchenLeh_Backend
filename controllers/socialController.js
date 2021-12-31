@@ -15,24 +15,21 @@ router.get('/auth/google', passport.authenticate('google', { scope: ['profile'] 
 
 
 router.get('/redirect/facebook',
-    passport.authenticate('facebook', { failureRedirect: '/login' }),
-    function (req, res) {
+    passport.authenticate('facebook'),
+    (req, res) => {
         res.redirect("http://localhost:3000/")
     });
 
 
-
-
-
 router.get('/redirect/twitter',
-    passport.authenticate('twitter', { failureRedirect: '/login' }),
-    function (req, res) {
+    passport.authenticate('twitter'),
+    (req, res) => {
         res.redirect("http://localhost:3000/")
     });
 
 router.get('/redirect/google',
-    passport.authenticate('google', { failureRedirect: '/login', failureMessage: true }),
-    function (req, res) {
+    passport.authenticate('google'),
+    (req, res) => {
         res.redirect("http://localhost:3000/");
     });
 
@@ -42,7 +39,7 @@ router.get('/getlogin', (req, res) => {
 })
 
 
-router.delete('/logout', async (req, res) => {
+router.delete('/logout', (req, res) => {
 
     if (req.session) {
         req.logOut()

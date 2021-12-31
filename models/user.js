@@ -6,6 +6,7 @@ const userSchema = new Schema(
     {
         username: {
             type: String,
+            unique: true,
             required: true
         },
         facebookId:
@@ -29,4 +30,4 @@ const userSchema = new Schema(
 userSchema.plugin(passportLocalMongoose)
 
 
-module.exports = mongoose.model('User', userSchema)
+module.exports = mongoose.model('User2', userSchema)
