@@ -35,9 +35,9 @@ passport.use(new FacebookStrategy({
     callbackURL: "/redirect/facebook"
 
 },
-    function (accessToken, refreshToken, profile, done) {
+    async (accessToken, refreshToken, profile, done) => {
         console.log(profile)
-        User.findOne({
+     await User.findOne({
             'username': profile.displayName
         }, (err, user) => {
             if (err) {
@@ -63,7 +63,7 @@ passport.use(new FacebookStrategy({
                     return done(err, user)
                 })
             }
-        });
+        }).clone();
 
     }
 ));
@@ -76,9 +76,9 @@ passport.use(new TwitterStrategy({
     callbackURL: "/redirect/twitter"
 
 },
-    function (token, tokenSecret, profile, done) {
+    async (token, tokenSecret, profile, done) => {
         console.log(profile)
-        User.findOne({
+      await User.findOne({
             'username': profile.displayName
         }, (err, user) => {
             if (err) {
@@ -104,7 +104,7 @@ passport.use(new TwitterStrategy({
                     return done(err, user)
                 })
             }
-        });
+        }).clone();
 
     }
 ));
@@ -114,9 +114,9 @@ passport.use(new GoogleStrategy({
     clientID: process.env['GOOGLE_CLIENT_ID'],
     clientSecret: process.env['GOOGLE_CLIENT_SECRET'],
     callbackURL: "/redirect/google"
-}, function (accessToken, refreshToken, profile, done) {
+}, async (accessToken, refreshToken, profile, done) => {
     console.log(profile)
-    User.findOne({
+    await User.findOne({
         'username': profile.displayName
     }, (err, user) => {
         if (err) {
@@ -142,7 +142,7 @@ passport.use(new GoogleStrategy({
                 return done(err, user)
             })
         }
-    });
+    }).clone();
 
 }
 ));
