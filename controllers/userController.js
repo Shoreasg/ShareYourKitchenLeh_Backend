@@ -45,13 +45,35 @@ router.post('/login', async (req, res, next) => {
 
 });
 
-router.get('/getlogin', (req,res)=>
-{
+router.get('/getlogin', (req, res) => {
   res.send(req.user)
 })
 
+router.get('/checkusername/:username', async (req, res) => {
+  const findUser =  await User.findOne({ "username": req.params.username }) 
+    if (!findUser) {
+      return res.send({ message: "user not found" })
+    }
+    
+    return res.send({ message: "user found" })
+  })
 
-router.delete('/logout', async (req, res) => {
+router.post('/setnewpassword', async (req, res) => {
+  const foundUser = await User.findOne({ "username": req.body.username })
+  await foundUser.setPassword(req.body.password);
+  const updatePassword = await foundUser.save();
+ if(updatePassword)
+ {
+    if (!updatePassword)
+    {
+      res.send({message: "Password update failure (Server error)"})
+    }
+    return res.send({message: "Password updated"})
+  }
+})
+
+
+router.delete('/logout', (req, res) => {
 
   if (req.session) {
     req.logOut()

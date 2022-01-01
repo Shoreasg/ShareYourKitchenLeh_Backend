@@ -8,11 +8,26 @@ const userSchema = new Schema(
             type: String,
             unique: true,
             required: true
-        }
+        },
+        facebookId:
+        {
+            required: false,
+            type: String
+        },
+        twitterId:
+        {
+            required: false,
+            type: String
+        },
+        googleId:
+        {
+            required: false,
+            type: String
+        },
     }
 );
 
 userSchema.plugin(passportLocalMongoose)
 
 
-module.exports = mongoose.model('User',userSchema)
+module.exports = mongoose.model('User2', userSchema)
