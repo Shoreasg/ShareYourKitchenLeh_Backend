@@ -1,22 +1,28 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
-const passport = require('passport')
-const session = require('express-session')
-const LocalStrategy = require('passport-local').Strategy
-const User = require('./models/user')
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
+const passport = require("passport");
+const session = require("express-session");
+const LocalStrategy = require("passport-local").Strategy;
+const User = require("./models/user");
 const app = express();
-app.use(express.json())
-app.use(cors({origin: "http://localhost:3000",methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD','DELETE'],credentials:true}));
-const userController = require('./controllers/userController')
+app.use(express.json());
+app.use(
+	cors({
+		origin: "http://localhost:3000",
+		methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD", "DELETE"],
+		credentials: true,
+	})
+);
+const userController = require("./controllers/userController");
 
-
-app.use(session({
-    secret: process.env.SECRET,
-    resave:false,
-    saveUninitialized: false,
-}));
-
+app.use(
+	session({
+		secret: process.env.SECRET,
+		resave: false,
+		saveUninitialized: false,
+	})
+);
 
 // Configure passport middleware
 app.use(passport.initialize());
@@ -28,8 +34,28 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-app.use(userController)
+app.use(userController);
 
+// routes
 
+const groupsRouter = require("./routes/groups");
+const itemsRouter = require("./routes/items");
+const membersRouter = require("./routes/members");
 
-module.exports=app
+app.get("/", (req, res) => {
+	res.send(
+		"<div><h1>GA/SEIF7 - PROJECT 3: GROUP 1</h1><h2>Share your kitchen leh API</h2><ul><li><a href='/api/v1/members'>All Members</a></li><li><a href='/api/v1/groups'>All Groups</a></li><li><a href='/api/v1/items'>All Items</a></li></ul></div>"
+	);
+});
+
+app.use("/api/v1/groups", groupsRouter);
+app.use("/api/v1/items", itemsRouter);
+app.use("/api/v1/members", membersRouter);
+
+// error handler
+const notFoundMiddleware = require("./middleware/not-found");
+const errorHandlerMiddleware = require("./middleware/error-handler");
+
+app.use(notFoundMiddleware);
+app.use(errorHandlerMiddleware);
+module.exports = app;
