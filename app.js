@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
@@ -22,33 +21,6 @@ app.use(session({
     saveUninitialized: false,
 }));
 
-=======
-const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
-const passport = require("passport");
-const session = require("express-session");
-const LocalStrategy = require("passport-local").Strategy;
-const User = require("./models/user");
-const app = express();
-app.use(express.json());
-app.use(
-	cors({
-		origin: "http://localhost:3000",
-		methods: ["POST", "PUT", "GET", "OPTIONS", "HEAD", "DELETE"],
-		credentials: true,
-	})
-);
-const userController = require("./controllers/userController");
-
-app.use(
-	session({
-		secret: process.env.SECRET,
-		resave: false,
-		saveUninitialized: false,
-	})
-);
->>>>>>> f78421849de2833b1b3c80c5095912417a3701fe
 
 // Configure passport middleware
 app.use(passport.initialize());
