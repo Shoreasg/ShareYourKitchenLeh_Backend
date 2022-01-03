@@ -4,7 +4,7 @@ const GroupSchema = new mongoose.Schema(
 	{
 		grpName: {
 			type: String,
-			required: [true, "Please provide a group name between 1 - 50 characters"],
+			required: true,
 			maxlength: 50,
 			trim: true,
 		},
@@ -14,14 +14,14 @@ const GroupSchema = new mongoose.Schema(
 			default:
 				"https://www.gemkom.com.tr/wp-content/uploads/2020/02/NO_IMG_600x600-1.png",
 		},
-		members: [String],
+		members: [{ type: mongoose.Types.ObjectId, ref: "User2", required: true }],
 		ownerID: {
 			type: mongoose.Types.ObjectId,
-			ref: "Member",
-			required: [true, "Need a member"],
+			ref: "User2",
+			required: true
 		},
 	},
 	{ timestamps: true }
 );
 
-module.exports = mongoose.model("Group", GroupSchema);
+module.exports = mongoose.model("Group2", GroupSchema);
