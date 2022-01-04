@@ -36,7 +36,7 @@ passport.use(new FacebookStrategy({
                     }
                 );
                 const createNewGRP = await Group.create({
-                    grpName: `${user.username} personal-group`,
+                    grpName: `${user.username}-personal`,
                     members: [user._id],
                     ownerID: user._id
                 })
@@ -86,7 +86,7 @@ passport.use(new TwitterStrategy({
                     }
                 );
                 const createNewGRP = await Group.create({
-                    grpName: `${user.username} personal-group`,
+                    grpName: `${user.username}-personal`,
                     members: [user._id],
                     ownerID: user._id
                 })
@@ -130,7 +130,7 @@ passport.use(new GoogleStrategy({
                 }
             );
             const createNewGRP = await Group.create({
-                grpName: `${user.username} personal-group`,
+                grpName: `${user.username}-personal`,
                 members: [user._id],
                 ownerID: user._id
             })

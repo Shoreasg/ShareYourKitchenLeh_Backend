@@ -23,7 +23,7 @@ router.post('/signup', async (req, res, next) => {
           req.logIn(user, async (err) => {
             if (err) { return next(err) }
             const createNewGRP = await Group.create({
-              grpName: `${req.body.username} personal-group`,
+              grpName: `${req.body.username}-personal`,
               members: [user._id],
               ownerID: user._id
             })
