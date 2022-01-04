@@ -24,6 +24,7 @@ const userSchema = new Schema(
             required: false,
             type: String
         },
+        groups: [{ type: mongoose.Types.ObjectId, ref: "Group2", required: true }]
     }
 );
 
