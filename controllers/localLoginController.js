@@ -1,14 +1,20 @@
 const passport = require('passport')
+const randtoken = require('rand-token');
+require("dotenv").config();
+const mailgun = require('mailgun-js');
 const express = require('express')
 const User = require('../models/user')
 const Group = require('../models/Group')
 const router = express.Router()
 router.use(express.static("public"))
+const mg = mailgun({apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN});
 const LocalStrategy = require('passport-local').Strategy
+
+
 passport.use(new LocalStrategy(User.authenticate()));
 
 router.post('/signup', async (req, res, next) => {
-  await User.register(new User({ username: req.body.username }), req.body.password, (err) => {
+  await User.register(new User({ username: req.body.username, email: req.body.email }), req.body.password, (err) => {
     if (err) {
       res.status(400)
       res.send(err)
@@ -27,6 +33,22 @@ router.post('/signup', async (req, res, next) => {
               members: [user._id],
               ownerID: user._id
             })
+            const WelcomeEmail = {
+              from: 'ShareYourKitchenLeh <garyganweilun@gmail.com>',
+              to: req.body.email,
+              subject: 'Registeration Successful',
+              html: `
+              <h1>Registration Successful</h1>
+              <p>Dear ${req.body.username}, Your Account is registered successfully.<p>`
+            };
+         
+            mg.messages().send(WelcomeEmail,(error,body)=>{
+              if(error)
+              console.log("error",error)
+              else
+              console.log("body",body)
+            })
+
             await User.findByIdAndUpdate(user._id, { groups: createNewGRP._id }, { new: true })
             return res.send({ message: "User registered and login Successful" })
           })
@@ -58,24 +80,46 @@ router.get('/getlogin', (req, res) => {
   res.send(req.user)
 })
 
-router.get('/checkusername/:username', async (req, res) => {
-  const findUser = await User.findOne({ "username": req.params.username })
+router.post('/checkemail/:email', async (req, res) => {
+  const findUser = await User.findOne({ "email": req.params.email })
+  console.log(findUser)
   if (!findUser) {
-    return res.send({ message: "user not found" })
+    return res.send({ message: "Email not found" })
   }
-
-  return res.send({ message: "user found" })
+  const ResetEmail = {
+    from: 'ShareYourKitchenLeh <garyganweilun@gmail.com>',
+    to: req.params.email,
+    subject: 'Reset your password',
+    html: `
+              <h1>Reset password</h1>
+              <p>Dear ${findUser.username}, click this <a href="http://localhost:3000/reset/${findUser.resetToken}">link</a> to reset password</p>`
+  };
+  mg.messages().send(ResetEmail,(error,body)=>{
+    if(error)
+    console.log("error",error)
+    else
+    console.log("body",body)
+  })
+  return res.send({ message: "Email found" })
 })
 
-router.post('/setnewpassword', async (req, res) => {
-  const foundUser = await User.findOne({ "username": req.body.username })
-  await foundUser.setPassword(req.body.password);
+
+router.post('/resetpassword', async (req, res) => {
+  const foundUser = await User.findOne({ "resetToken": req.body.resetToken })
+  if(foundUser)
+  {
+    await foundUser.setPassword(req.body.password);
+    foundUser.resetToken = randtoken.generate(30)
+  }
+  else
+  return res.send({ message: "Invalid Token" })
+  
   const updatePassword = await foundUser.save();
   if (updatePassword) {
     if (!updatePassword) {
       res.send({ message: "Password update failure (Server error)" })
     }
-    return res.send({ message: "Password updated" })
+    return res.send({ message: "Password updated Successfully" })
   }
 })
 
