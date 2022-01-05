@@ -14,7 +14,7 @@ const LocalStrategy = require('passport-local').Strategy
 passport.use(new LocalStrategy(User.authenticate()));
 
 router.post('/signup', async (req, res, next) => {
-  const findUser = await User.findOne({ "email": req.body.email })
+  const findUser = await User.findOne({ email : req.body.email })
   if (!findUser) {
     await User.register(new User({ username: req.body.username, email: req.body.email, resetToken: randtoken.generate(30) }), req.body.password, (err) => {
       if (err) {
@@ -44,12 +44,7 @@ router.post('/signup', async (req, res, next) => {
               <p>Dear ${req.body.username}, Your Account is registered successfully.<p>`
               };
 
-              // mg.messages().send(WelcomeEmail,(error,body)=>{
-              //   if(error)
-              //   console.log("error",error)
-              //   else
-              //   console.log("body",body)
-              // })
+              mg.messages().send(WelcomeEmail)
 
               await User.findByIdAndUpdate(user._id, { groups: createNewGRP._id }, { new: true })
               return res.send({ message: "User registered and login Successful" })
@@ -88,32 +83,26 @@ router.get('/getlogin', (req, res) => {
   res.send(req.user)
 })
 
-router.post('/checkemail/:email', async (req, res) => {
-  const findUser = await User.findOne({ "email": req.params.email })
-  console.log(findUser)
+router.post('/checkemail', async (req, res) => {
+  const findUser = await User.findOne({ email : req.body.email })
   if (!findUser) {
     return res.send({ message: "Email not found" })
   }
   const ResetEmail = {
     from: 'ShareYourKitchenLeh <garyganweilun@gmail.com>',
-    to: req.params.email,
+    to: req.body.email,
     subject: 'Reset your password',
     html: `
               <h1>Reset password</h1>
               <p>Dear ${findUser.username}, click this <a href="http://localhost:3000/reset/${findUser.resetToken}">link</a> to reset password</p>`
   };
-  mg.messages().send(ResetEmail, (error, body) => {
-    if (error)
-      console.log("error", error)
-    else
-      console.log("body", body)
-  })
+  mg.messages().send(ResetEmail)
   return res.send({ message: "Email found" })
 })
 
 
 router.post('/resetpassword', async (req, res) => {
-  const foundUser = await User.findOne({ "resetToken": req.body.resetToken })
+  const foundUser = await User.findOne({ resetToken : req.body.resetToken })
   if (foundUser) {
     await foundUser.setPassword(req.body.password);
     foundUser.resetToken = randtoken.generate(30)
