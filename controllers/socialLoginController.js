@@ -11,13 +11,14 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 passport.use(new FacebookStrategy({
     clientID: process.env['FACEBOOK_APP_ID'],
     clientSecret: process.env['FACEBOOK_APP_SECRET'],
-    callbackURL: "/redirect/facebook"
+    callbackURL: "/redirect/facebook",
+    profileFields: ['id', 'emails', 'displayName']
 
 },
     async (accessToken, refreshToken, profile, done) => {
         console.log(profile)
-        await User.findOne({
-            'username': profile.displayName
+         User.findOne({
+            email: profile._json.email
         }, async (err, user) => {
             if (err) {
                 return done(err);
@@ -32,7 +33,8 @@ passport.use(new FacebookStrategy({
                 user = new User(
                     {
                         username: profile.displayName,
-                        facebookId: profile.id
+                        facebookId: profile.id,
+                        email: profile._json.email
                     }
                 );
                 const createNewGRP = await Group.create({
@@ -51,7 +53,7 @@ passport.use(new FacebookStrategy({
                 })
 
             }
-        }).clone();
+        });
 
     }
 ));
@@ -61,13 +63,13 @@ passport.use(new FacebookStrategy({
 passport.use(new TwitterStrategy({
     consumerKey: process.env['TWITTER_API_KEY'],
     consumerSecret: process.env['TWITTER_API_SECRET'],
-    callbackURL: "/redirect/twitter"
-
+    callbackURL: "/redirect/twitter",
+    includeEmail: true
 },
     async (token, tokenSecret, profile, done) => {
         console.log(profile)
-        await User.findOne({
-            'username': profile.displayName
+        User.findOne({
+            email: profile._json.email
         }, async (err, user) => {
             if (err) {
                 return done(err);
@@ -82,7 +84,8 @@ passport.use(new TwitterStrategy({
                 user = new User(
                     {
                         username: profile.displayName,
-                        twitterId: profile.id
+                        twitterId: profile.id,
+                        email: profile._json.email
                     }
                 );
                 const createNewGRP = await Group.create({
@@ -98,7 +101,7 @@ passport.use(new TwitterStrategy({
                     return done(err, user)
                 })
             }
-        }).clone();
+        });
 
     }
 ));
@@ -110,8 +113,8 @@ passport.use(new GoogleStrategy({
     callbackURL: "/redirect/google"
 }, async (accessToken, refreshToken, profile, done) => {
     console.log(profile)
-    await User.findOne({
-        'username': profile.displayName
+    User.findOne({
+        email: profile._json.email
     }, async (err, user) => {
         if (err) {
             return done(err);
@@ -126,7 +129,8 @@ passport.use(new GoogleStrategy({
             user = new User(
                 {
                     username: profile.displayName,
-                    googleId: profile.id
+                    googleId: profile.id,
+                    email: profile._json.email
                 }
             );
             const createNewGRP = await Group.create({
@@ -142,18 +146,18 @@ passport.use(new GoogleStrategy({
                 return done(err, user)
             })
         }
-    }).clone();
+    })
 
 }
 ));
 
-router.get('/auth/facebook', passport.authenticate('facebook'));
+router.get('/auth/facebook', passport.authenticate('facebook',{ scope : ['email'] }));
 
 
 router.get('/auth/twitter', passport.authenticate('twitter'));
 
 
-router.get('/auth/google', passport.authenticate('google', { scope: ['profile'] }));
+router.get('/auth/google', passport.authenticate('google', { scope: ['profile','email'] }));
 
 
 router.get('/redirect/facebook',

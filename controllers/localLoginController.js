@@ -7,55 +7,63 @@ const User = require('../models/user')
 const Group = require('../models/Group')
 const router = express.Router()
 router.use(express.static("public"))
-const mg = mailgun({apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN});
+const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: process.env.MAILGUN_DOMAIN });
 const LocalStrategy = require('passport-local').Strategy
 
 
 passport.use(new LocalStrategy(User.authenticate()));
 
 router.post('/signup', async (req, res, next) => {
-  await User.register(new User({ username: req.body.username, email: req.body.email }), req.body.password, (err) => {
-    if (err) {
-      res.status(400)
-      res.send(err)
-      return next()
-    }
-    else {
-      passport.authenticate('local', (err, user) => {
-        if (err) {
-          res.status(400)
-          return res.send({ message: err })
-        } else {
-          req.logIn(user, async (err) => {
-            if (err) { return next(err) }
-            const createNewGRP = await Group.create({
-              grpName: `${req.body.username}-personal`,
-              members: [user._id],
-              ownerID: user._id
-            })
-            const WelcomeEmail = {
-              from: 'ShareYourKitchenLeh <garyganweilun@gmail.com>',
-              to: req.body.email,
-              subject: 'Registeration Successful',
-              html: `
+  const findUser = await User.findOne({ "email": req.body.email })
+  if (!findUser) {
+    await User.register(new User({ username: req.body.username, email: req.body.email, resetToken: randtoken.generate(30) }), req.body.password, (err) => {
+      if (err) {
+        res.status(400)
+        res.send(err)
+        return next()
+      }
+      else {
+        passport.authenticate('local', (err, user) => {
+          if (err) {
+            res.status(400)
+            return res.send({ message: err })
+          } else {
+            req.logIn(user, async (err) => {
+              if (err) { return next(err) }
+              const createNewGRP = await Group.create({
+                grpName: `${req.body.username}-personal`,
+                members: [user._id],
+                ownerID: user._id
+              })
+              const WelcomeEmail = {
+                from: 'ShareYourKitchenLeh <garyganweilun@gmail.com>',
+                to: req.body.email,
+                subject: 'Registeration Successful',
+                html: `
               <h1>Registration Successful</h1>
               <p>Dear ${req.body.username}, Your Account is registered successfully.<p>`
-            };
-         
-            mg.messages().send(WelcomeEmail,(error,body)=>{
-              if(error)
-              console.log("error",error)
-              else
-              console.log("body",body)
-            })
+              };
 
-            await User.findByIdAndUpdate(user._id, { groups: createNewGRP._id }, { new: true })
-            return res.send({ message: "User registered and login Successful" })
-          })
-        }
-      })(req, res, next)
-    }
-  })
+              // mg.messages().send(WelcomeEmail,(error,body)=>{
+              //   if(error)
+              //   console.log("error",error)
+              //   else
+              //   console.log("body",body)
+              // })
+
+              await User.findByIdAndUpdate(user._id, { groups: createNewGRP._id }, { new: true })
+              return res.send({ message: "User registered and login Successful" })
+            })
+          }
+        })(req, res, next)
+      }
+    })
+  }
+  else
+  {
+  res.status(400)
+  res.send({message:'A user with the given email is already registered'})
+  }
 })
 
 router.post('/login', async (req, res, next) => {
@@ -94,11 +102,11 @@ router.post('/checkemail/:email', async (req, res) => {
               <h1>Reset password</h1>
               <p>Dear ${findUser.username}, click this <a href="http://localhost:3000/reset/${findUser.resetToken}">link</a> to reset password</p>`
   };
-  mg.messages().send(ResetEmail,(error,body)=>{
-    if(error)
-    console.log("error",error)
+  mg.messages().send(ResetEmail, (error, body) => {
+    if (error)
+      console.log("error", error)
     else
-    console.log("body",body)
+      console.log("body", body)
   })
   return res.send({ message: "Email found" })
 })
@@ -106,14 +114,13 @@ router.post('/checkemail/:email', async (req, res) => {
 
 router.post('/resetpassword', async (req, res) => {
   const foundUser = await User.findOne({ "resetToken": req.body.resetToken })
-  if(foundUser)
-  {
+  if (foundUser) {
     await foundUser.setPassword(req.body.password);
     foundUser.resetToken = randtoken.generate(30)
   }
   else
-  return res.send({ message: "Invalid Token" })
-  
+    return res.send({ message: "Invalid Token" })
+
   const updatePassword = await foundUser.save();
   if (updatePassword) {
     if (!updatePassword) {

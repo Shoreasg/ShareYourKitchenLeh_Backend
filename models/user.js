@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const passportLocalMongoose = require('passport-local-mongoose');
-const randtoken = require('rand-token');
-
 const userSchema = new Schema(
     {
         username: {
@@ -27,14 +25,12 @@ const userSchema = new Schema(
         },
         email: {
             required: true,
+            unique: true,
             type: String
         },
         groups: [{ type: mongoose.Types.ObjectId, ref: "Group2", required: true }],
         resetToken:{
-            type: String,
-            default: function(){
-                return randtoken.generate(30)
-            }
+            type: String
         }
     }
 );
