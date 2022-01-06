@@ -6,7 +6,7 @@ const session = require('express-session')
 const User = require('./models/user')
 const app = express();
 app.use(express.json())
-app.use(cors({ origin: "http://localhost:3000", methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE'], credentials: true }));
+app.use(cors({ origin: `${process.env.FRONTEND_URL}`, methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE'], credentials: true }));
 const userController = require('./controllers/localLoginController')
 const socialController = require('./controllers/socialLoginController')
 
@@ -23,7 +23,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
-
+// use static serialize and deserialize of model for passport session support
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
