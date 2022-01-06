@@ -14,7 +14,7 @@ const GroupSchema = new mongoose.Schema(
 			default:
 				"https://www.gemkom.com.tr/wp-content/uploads/2020/02/NO_IMG_600x600-1.png",
 		},
-		members: [{ type: mongoose.Types.ObjectId, ref: "User2", required: true }],
+		members: [{ type: mongoose.Types.ObjectId, ref: "User", required: true }],
 		ownerID: {
 			type: mongoose.Types.ObjectId,
 			ref: "User2",
@@ -24,4 +24,4 @@ const GroupSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-module.exports = mongoose.model("Group2", GroupSchema);
+module.exports = mongoose.model("Group", GroupSchema);

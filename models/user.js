@@ -24,11 +24,11 @@ const userSchema = new Schema(
             required: false,
             type: String
         },
-        groups: [{ type: mongoose.Types.ObjectId, ref: "Group2", required: true }]
+        groups: [{ type: mongoose.Types.ObjectId, ref: "Group", required: true }]
     }
 );
 
 userSchema.plugin(passportLocalMongoose)
 
 
-module.exports = mongoose.model('User2', userSchema)
+module.exports = mongoose.model('User', userSchema)
