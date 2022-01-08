@@ -9,7 +9,7 @@ app.use(express.json())
 app.use(cors({ origin: "http://localhost:3000", methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE'], credentials: true }));
 const userController = require('./controllers/localLoginController')
 const socialController = require('./controllers/socialLoginController')
-
+app.enable('trust proxy')
 
 app.use(session({
     secret: process.env.SECRET,
