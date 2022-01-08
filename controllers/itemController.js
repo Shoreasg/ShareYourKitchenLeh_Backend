@@ -1,4 +1,4 @@
-const Member = require("../models/Member");
+const Member = require("../models/user");
 const Group = require("../models/Group");
 const Item = require("../models/Item");
 const { StatusCodes } = require("http-status-codes");

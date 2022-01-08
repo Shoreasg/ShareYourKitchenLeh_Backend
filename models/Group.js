@@ -17,7 +17,7 @@ const GroupSchema = new mongoose.Schema(
 		members: [{ type: mongoose.Types.ObjectId, ref: "User", required: true }],
 		ownerID: {
 			type: mongoose.Types.ObjectId,
-			ref: "User2",
+			ref: "User",
 			required: true
 		},
 	},
