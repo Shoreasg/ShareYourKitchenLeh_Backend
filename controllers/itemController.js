@@ -104,7 +104,7 @@ const getAllItems = async (req, res) => {
 		// results of the customised query
 		// eg http://localhost:5000/api/v1/items?fav=false&valueFilter=qty>=4&brand=meiji&name=sauces
 
-		let result = Item.find(queryObj);
+		let result = Item.find(queryObj).populate('grpID');
 
 		//______ sort ______//
 		// eg items?sort=name,-qty
@@ -140,7 +140,7 @@ const getAllItems = async (req, res) => {
 const getItem = async (req, res) => {
 	try {
 		const id = req.params.id;
-		const item = await Item.findOne({ _id: id });
+		const item = await Item.findOne({ _id: id }).populate('grpID');
 
 		if (!item) {
 			return res.status(StatusCodes.NOT_FOUND).json({
