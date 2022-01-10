@@ -44,7 +44,7 @@ router.post('/signup', async (req, res, next) => {
               <p>Dear ${req.body.username}, Your Account is registered successfully.<p>`
               };
 
-              mg.messages().send(WelcomeEmail)
+              // mg.messages().send(WelcomeEmail)
 
               await User.findByIdAndUpdate(user._id, { groups: createNewGRP._id }, { new: true }) // we get the user._id and update the user as admin of the group
               return res.send({ message: "User registered and login Successful" })
@@ -96,7 +96,7 @@ router.post('/checkemail', async (req, res) => { // this is for forgot password 
               <h1>Reset password</h1>
               <p>Dear ${findUser.username}, click this <a href="${process.env.FRONTEND_URL}/reset/${findUser.resetToken}">link</a> to reset password</p>`
   };
-  mg.messages().send(ResetEmail)
+  // mg.messages().send(ResetEmail)
   return res.send({ message: "Email found" })
 })
 

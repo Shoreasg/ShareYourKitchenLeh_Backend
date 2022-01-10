@@ -9,12 +9,13 @@ app.use(express.json())
 app.use(cors({ origin: `${process.env.FRONTEND_URL}`, methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE'], credentials: true }));
 const userController = require('./controllers/localLoginController')
 const socialController = require('./controllers/socialLoginController')
-
+// app.enable('trust proxy')
 
 app.use(session({
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
+    // cookie: {sameSite: "none", secure: true}
 }));
 
 

@@ -28,7 +28,7 @@ const userSchema = new Schema(
             unique: true,
             type: String
         },
-        groups: [{ type: mongoose.Types.ObjectId, ref: "Group2", required: true }],
+        groups: [{ type: mongoose.Types.ObjectId, ref: "Group", required: true }],
         resetToken:{
             type: String
         }
@@ -38,4 +38,4 @@ const userSchema = new Schema(
 userSchema.plugin(passportLocalMongoose)
 
 
-module.exports = mongoose.model('User2', userSchema)
+module.exports = mongoose.model('User', userSchema)

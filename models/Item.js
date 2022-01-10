@@ -36,7 +36,7 @@ const ItemSchema = new mongoose.Schema(
 		},
 		createdBy: {
 			type: mongoose.Types.ObjectId,
-			ref: "Member",
+			ref: "User",
 			required: [true, "Please login as user"],
 		},
 	},
