@@ -6,11 +6,7 @@ const session = require('express-session')
 const User = require('./models/user')
 const app = express();
 app.use(express.json())
-<<<<<<< HEAD
-app.use(cors({ origin: `${process.env.FRONTEND_URL}`, methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE'], credentials: true }));
-=======
 app.use(cors({ origin: "http://localhost:3000", methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE', 'PATCH'], credentials: true }));
->>>>>>> 2ac40a048fbd7cd487f82f8cb837b6b965aa8618
 const userController = require('./controllers/localLoginController')
 const socialController = require('./controllers/socialLoginController')
 // app.enable('trust proxy')
