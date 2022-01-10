@@ -46,7 +46,7 @@ const getAllItems = async (req, res) => {
 		// eg http://localhost:5000/api/v1/items?fav=false&valueFilter=qty>=4
 		// req.query return object so can directly pass in .find(obj)
 
-		const { fav, name, brand, createdby, sort, fields, valueFilter, grpID } =
+		const { fav, name, brand, createdby, sort, fields, valueFilter, grpID, expiryDate} =
 			req.query;
 
 		const queryObj = {};
@@ -69,6 +69,11 @@ const getAllItems = async (req, res) => {
 
 		if (grpID) {
 			queryObj.grpID = grpID;
+		}
+
+		
+		if (expiryDate) {
+			queryObj.expiryDate = expiryDate;
 		}
 
 		//______ valueFilter ______//
