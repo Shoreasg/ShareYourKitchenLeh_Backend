@@ -27,7 +27,7 @@ const createGroup = async (req, res) => {
 			});
 		}
 
-		// if NEW : create new group and update member profile of newly added groupsID
+		// if NEW : create new group and update member profile of newly added groups
 
 		const group = await Group.create({
 			grpName,
@@ -37,15 +37,15 @@ const createGroup = async (req, res) => {
 		});
 
 		// updating the created group into newly created membersss profile
-		// updating groupsID into every members profile
+		// updating groups into every members profile
 
 		if (group.members.length > 0) {
 			for (const element of group.members) {
 				let checkMemberGRP = await Member.findByIdAndUpdate({ _id: element });
-				if (!checkMemberGRP.groupsID.includes(group._id)) {
+				if (!checkMemberGRP.groups.includes(group._id)) {
 					const updatedMember = await Member.findByIdAndUpdate(
 						{ _id: element },
-						{ $push: { groupsID: group._id } },
+						{ $push: { groups: group._id } },
 						{ new: true, runValidators: true }
 					);
 				}
@@ -152,15 +152,15 @@ const updateGroup = async (req, res) => {
 		}
 
 		if (group.members !== [ownerID, ...members]) {
-			// updating groupsID into every members profile
+			// updating groups into every members profile
 
 			if (members.length > 0) {
 				for (const element of members) {
 					let checkMemberGRP = await Member.findByIdAndUpdate({ _id: element });
-					if (!checkMemberGRP.groupsID.includes(group._id)) {
+					if (!checkMemberGRP.groups.includes(group._id)) {
 						const updatedMember = await Member.findByIdAndUpdate(
 							{ _id: element },
-							{ $push: { groupsID: group._id } },
+							{ $push: { groups: group._id } },
 							{ new: true, runValidators: true }
 						);
 					}
@@ -172,11 +172,11 @@ const updateGroup = async (req, res) => {
 			if (toREMOVE.length > 0) {
 				for (const element of toREMOVE) {
 					const list = await Member.findOne({ _id: element });
-					let newGRPList = list.groupsID.filter((item) => item !== id);
+					let newGRPList = list.groups.filter((item) => item !== id);
 
 					await Member.findByIdAndUpdate(
 						{ _id: element },
-						{ groupsID: newGRPList },
+						{ groups: newGRPList },
 						{
 							new: true,
 							runValidators: true,
@@ -223,20 +223,20 @@ const deleteGroup = async (req, res) => {
 			});
 		}
 
-		// updating member profile group array, removed the groupsID
+		// updating member profile group array, removed the groups
 
-		// check all contain GroupsID member returning in array
+		// check all contain groups member returning in array
 		const members = await Member.find({
-			groupsID: { $in: [id] },
+			groups: { $in: [id] },
 		});
 
 		// if array is truthy remove the id
 		if (members) {
 			for (let element of members) {
-				let newGRPList = element.groupsID.filter((item) => item !== id);
+				let newGRPList = element.groups.filter((item) => item !== id);
 				await Member.findByIdAndUpdate(
 					{ _id: element._id },
-					{ groupsID: newGRPList },
+					{ groups: newGRPList },
 					{
 						new: true,
 						runValidators: true,
