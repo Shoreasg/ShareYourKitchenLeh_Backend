@@ -8,14 +8,14 @@ const lodash = require("lodash");
 const createGroup = async (req, res) => {
 	try {
 		const { grpName, imgUrl, members, ownerID } = req.body;
-
+		console.log([ownerID, ...members]);
 		if (!grpName || !ownerID) {
 			return res.status(StatusCodes.BAD_REQUEST).json({
 				status: "BAD REQUEST",
 				message: `Please provide group name and owner ID`,
 			});
 		}
-
+		console.log(req.body);
 		// check if name is existing or new
 		const checkUniqueName = await Group.exists({ grpName, ownerID });
 
@@ -27,8 +27,17 @@ const createGroup = async (req, res) => {
 			});
 		}
 
-		// if NEW : create new group and update member profile of newly added groups
+		// check if members array include owner
+		if (members.includes(ownerID)) {
+			return res.status(StatusCodes.CONFLICT).json({
+				status: "CONFLICT",
+				message: "You are the owner of this group!",
+			});
+		}
+	
 
+		// if NEW : create new group and update member profile of newly added groups
+		
 		const group = await Group.create({
 			grpName,
 			ownerID,
