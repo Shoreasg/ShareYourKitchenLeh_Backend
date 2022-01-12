@@ -6,7 +6,7 @@ const session = require('express-session')
 const User = require('./models/user')
 const app = express();
 app.use(express.json())
-app.use(cors({ origin: process.env.DEV_URL, methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE', 'PATCH'], credentials: true }));
+app.use(cors({ origin: process.env.FRONTEND_URL, methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE', 'PATCH'], credentials: true }));
 const userController = require('./controllers/localLoginController')
 const socialController = require('./controllers/socialLoginController')
 app.enable('trust proxy')
@@ -15,8 +15,8 @@ app.use(session({
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
-    proxy : true ,
-    cookie: {sameSite: "none", secure: true}
+    // proxy : true ,
+    // cookie: {sameSite: "none", secure: true}
 }));
 
 
@@ -41,9 +41,9 @@ const itemsRouter = require("./routes/items");
 const membersRouter = require("./routes/members");
 
 app.get("/", (req, res) => {
-	res.send(
-		"<div><h1>GA/SEIF7 - PROJECT 3: GROUP 1</h1><h2>Share your kitchen leh API</h2><ul><li><a href='/api/v1/members'>All Members</a></li><li><a href='/api/v1/groups'>All Groups</a></li><li><a href='/api/v1/items'>All Items</a></li></ul></div>"
-	);
+    res.send(
+        "<div><h1>GA/SEIF7 - PROJECT 3: GROUP 1</h1><h2>Share your kitchen leh API</h2><ul><li><a href='/api/v1/members'>All Members</a></li><li><a href='/api/v1/groups'>All Groups</a></li><li><a href='/api/v1/items'>All Items</a></li></ul></div>"
+    );
 });
 
 app.use("/api/v1/groups", groupsRouter);
