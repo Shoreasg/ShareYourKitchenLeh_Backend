@@ -1,5 +1,6 @@
 const Member = require("../models/user");
 const Group = require("../models/Group");
+const Item = require("../models/Item");
 const { StatusCodes } = require("http-status-codes");
 const lodash = require("lodash");
 
@@ -34,10 +35,9 @@ const createGroup = async (req, res) => {
 				message: "You are the owner of this group!",
 			});
 		}
-	
 
 		// if NEW : create new group and update member profile of newly added groups
-		
+
 		const group = await Group.create({
 			grpName,
 			ownerID,
@@ -242,7 +242,7 @@ const deleteGroup = async (req, res) => {
 		// if array is truthy remove the id
 		if (members) {
 			for (let element of members) {
-				let newGRPList = element.groups.filter((item) => item !== id);
+				let newGRPList = element.groups.filter((item) => item != id);
 				await Member.findByIdAndUpdate(
 					{ _id: element._id },
 					{ groups: newGRPList },
@@ -254,12 +254,23 @@ const deleteGroup = async (req, res) => {
 			}
 		}
 
+		// find and deleting items in the groups
+		const items = await Item.find({ grpID: id });
+		// console.log(items);
+
+		// if array is truthy remove the items in group
+		if (items) {
+			for (let element of items) {
+				await Item.findByIdAndRemove({ _id: element._id });
+			}
+		}
+
 		// deleting group data
 		group = await Group.findByIdAndRemove({ _id: id });
 
 		return res.status(StatusCodes.OK).json({
 			status: "OK",
-			message: `member profile updated and group deleted`,
+			message: `member profile updated, items with group deleted`,
 		});
 	} catch (error) {
 		res.status(StatusCodes.BAD_REQUEST).json({
