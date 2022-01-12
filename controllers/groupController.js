@@ -22,13 +22,13 @@ const createGroup = async (req, res) => {
 		members = removeDup([ownerID, ...members]);
 
 		// check if name is existing or new
-		const checkUniqueName = await Group.find({ grpName, ownerID });
-		console.log(checkUniqueName);
+		const checkUniqueName = await Group.findOne({ grpName, ownerID });
+
 		// if EXISTING : return json with msg
 		if (checkUniqueName) {
 			return res.status(StatusCodes.CONFLICT).json({
 				status: "CONFLICT",
-				message: `Name is taken, please provide another name at ${checkUniqueName[0]._id}`,
+				message: `Name is taken in grpid ${checkUniqueName._id}, please provide another name`,
 			});
 		}
 
@@ -165,7 +165,6 @@ const updateGroup = async (req, res) => {
 		}
 		// check if members array have duplicate, if yes clean up (remove all duplicates and return unique value)
 		members = removeDup([ownerID, ...members]);
-		
 		if (group.members !== [ownerID, ...members]) {
 			// updating groups into every members profile
 
