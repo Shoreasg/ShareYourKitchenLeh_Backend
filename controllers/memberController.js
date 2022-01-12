@@ -63,7 +63,7 @@ const getAllMembers = async (req, res) => {
 		}
 
 		if (groupID) {
-			queryObj.groupsID = { $in: [groupID] };
+			queryObj.groups = { $in: [groupID] };
 		}
 
 		const members = await Member.find(queryObj);
