@@ -6,7 +6,7 @@ const session = require('express-session')
 const User = require('./models/user')
 const app = express();
 app.use(express.json())
-app.use(cors({ origin: "https://kitchentrackerfrontend.herokuapp.com/", methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE', 'PATCH'], credentials: true }));
+app.use(cors({ origin: "http://localhost:3000", methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD', 'DELETE', 'PATCH'], credentials: true }));
 const userController = require('./controllers/localLoginController')
 const socialController = require('./controllers/socialLoginController')
 app.enable('trust proxy')
@@ -15,7 +15,7 @@ app.use(session({
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: {sameSite: "none", secure: true}
+    // cookie: {sameSite: "none", secure: true}
 }));
 
 
