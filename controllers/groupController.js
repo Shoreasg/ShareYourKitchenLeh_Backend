@@ -32,7 +32,7 @@ const createGroup = async (req, res) => {
 			});
 		}
 
-		// // check if members array include owner
+		// check if members array include owner
 		// if (members.includes(ownerID)) {
 		// 	return res.status(StatusCodes.CONFLICT).json({
 		// 		status: "CONFLICT",
@@ -199,7 +199,6 @@ const updateGroup = async (req, res) => {
 				}
 			}
 		}
-		members = [ownerID, ...members];
 		// Updating Group
 		group = await Group.findByIdAndUpdate(
 			{ _id: id },
