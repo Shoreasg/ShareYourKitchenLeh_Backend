@@ -3,38 +3,42 @@ const Group = require("../models/Group");
 const Item = require("../models/Item");
 const { StatusCodes } = require("http-status-codes");
 const lodash = require("lodash");
+const removeDup = require("../middleware/removeDup");
 
 // ============================>> CREATE NEW GROUP
 // each group created, will also updated member's profile with this.group id added
 const createGroup = async (req, res) => {
 	try {
-		const { grpName, imgUrl, members, ownerID } = req.body;
-		console.log([ownerID, ...members]);
+		let { grpName, imgUrl, members, ownerID } = req.body;
+
 		if (!grpName || !ownerID) {
 			return res.status(StatusCodes.BAD_REQUEST).json({
 				status: "BAD REQUEST",
 				message: `Please provide group name and owner ID`,
 			});
 		}
-		console.log(req.body);
-		// check if name is existing or new
-		const checkUniqueName = await Group.exists({ grpName, ownerID });
 
+		// check if members array have duplicate, if yes clean up (remove all duplicates and return unique value)
+		members = removeDup([ownerID, ...members]);
+
+		// check if name is existing or new
+		const checkUniqueName = await Group.find({ grpName, ownerID });
+		console.log(checkUniqueName);
 		// if EXISTING : return json with msg
 		if (checkUniqueName) {
 			return res.status(StatusCodes.CONFLICT).json({
 				status: "CONFLICT",
-				message: "Name is taken, please provide another name",
+				message: `Name is taken, please provide another name at ${checkUniqueName[0]._id}`,
 			});
 		}
 
-		// check if members array include owner
-		if (members.includes(ownerID)) {
-			return res.status(StatusCodes.CONFLICT).json({
-				status: "CONFLICT",
-				message: "You are the owner of this group!",
-			});
-		}
+		// // check if members array include owner
+		// if (members.includes(ownerID)) {
+		// 	return res.status(StatusCodes.CONFLICT).json({
+		// 		status: "CONFLICT",
+		// 		message: "You are the owner of this group!",
+		// 	});
+		// }
 
 		// if NEW : create new group and update member profile of newly added groups
 
@@ -42,7 +46,7 @@ const createGroup = async (req, res) => {
 			grpName,
 			ownerID,
 			imgUrl,
-			members: [ownerID, ...members],
+			members,
 		});
 
 		// updating the created group into newly created membersss profile
@@ -159,7 +163,9 @@ const updateGroup = async (req, res) => {
 				message: `No data record with id ${id}`,
 			});
 		}
-
+		// check if members array have duplicate, if yes clean up (remove all duplicates and return unique value)
+		members = removeDup([ownerID, ...members]);
+		
 		if (group.members !== [ownerID, ...members]) {
 			// updating groups into every members profile
 
